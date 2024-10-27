@@ -347,12 +347,11 @@ extension AppViewController: UIScrollViewDelegate, UICollectionViewDelegate {
             return
         }
 
-        /*
+        
         let tempVC = InfoViewRefactor(url: data.url)
 
         navController.navigationBar.isHidden = true
         navController.pushViewController(tempVC, animated: true)
-         */
     }
 
     // Fade in new cells

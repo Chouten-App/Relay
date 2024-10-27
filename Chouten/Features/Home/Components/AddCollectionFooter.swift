@@ -11,6 +11,8 @@ class AddCollectionFooter: UICollectionReusableView {
     static let reuseIdentifier = "AddCollectionFooter"
 
     private let button = CircleButton(icon: "plus")
+    
+    weak var delegate: AddCollectionFooterDelegate?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -19,6 +21,10 @@ class AddCollectionFooter: UICollectionReusableView {
             button.centerXAnchor.constraint(equalTo: centerXAnchor),
             button.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
+        
+        button.onTap = {
+            self.delegate?.createCollection()
+        }
     }
 
     required init?(coder: NSCoder) {

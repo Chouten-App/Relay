@@ -344,15 +344,7 @@ class RepoInstallPopup: UIViewController {
                     // add icon, titles, modules ui
                     let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
 
-                    if let imageUrl = documentsDirectory?.appendingPathComponent("Repos").appendingPathComponent(metadata.id).appendingPathComponent("icon.png") {
-                        let imageData = try? Data(contentsOf: imageUrl)
-
-                        if let imageData {
-                            let image = UIImage(data: imageData)
-
-                            repoPicture.image = image
-                        }
-                    }
+                    self.repoPicture.setRepoImage(id: metadata.id)
 
                     self.titleLabel.text = metadata.title
                     self.authorLabel.text = metadata.author

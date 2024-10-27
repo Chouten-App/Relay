@@ -68,6 +68,7 @@ struct HomeFeature: Reducer {
                             await send(.view(.setCollections(collections)))
                             
                             print("Collections count: \(collections.count)")
+                            print("Collections first item: \(collections.first)")
                             print("Continue watching count: \(continueWatching.list.count)")
                         }
                     )

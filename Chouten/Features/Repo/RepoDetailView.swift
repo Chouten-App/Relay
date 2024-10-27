@@ -232,17 +232,8 @@ class RepoDetailView: UIViewController {
     private func configure() {
         view.backgroundColor = ThemeManager.shared.getColor(for: .bg)
 
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
-
-        if let imageUrl = documentsDirectory?.appendingPathComponent("Repos").appendingPathComponent(repo.id).appendingPathComponent("icon.png") {
-            let imageData = try? Data(contentsOf: imageUrl)
-
-            if let imageData {
-                let image = UIImage(data: imageData)
-
-                repoPicture.image = image
-            }
-        }
+        repoPicture.setRepoImage(id: repo.id)
+        
         titleLabel.text = repo.title
         authorLabel.text = repo.author
         descriptionLabel.text = repo.description

@@ -82,6 +82,8 @@ extension JSValue {
                         let image = item["thumbnail"] as? String
 
                         let mediaItem = MediaItem(url: url, number: number, title: title, thumbnail: image, description: description, indicator: indicator)
+                        
+                        print(mediaItem)
 
                         mediaItems.append(mediaItem)
                     }

@@ -115,8 +115,8 @@ class ListCellHome: UICollectionViewCell, SelfConfiguringCellHome {
             stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
 
-            indicator.widthAnchor.constraint(equalToConstant: 24),
-            indicator.heightAnchor.constraint(equalToConstant: 24),
+            indicator.widthAnchor.constraint(equalTo: indicatorLabel.widthAnchor, constant: 16),
+            indicator.heightAnchor.constraint(equalToConstant: 20),
             indicator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             indicator.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             
@@ -151,46 +151,9 @@ class ListCellHome: UICollectionViewCell, SelfConfiguringCellHome {
         titleLabel.text = data.titles.primary
         countLabel.text = "\(data.current != nil ? String(data.current!) : "~")/\(data.total != nil ? String(data.total!) : "~")"
 
-        if let indicator = ItemStatus(rawValue: data.indicator) {
-            var symbolName: String {
-                switch indicator {
-                case .inprogress:
-                    return "clock"  // You can randomly or conditionally choose between "clock", "hourglass", or "arrow.triangle.2.circlepath"
-                case .completed:
-                    return "checkmark.circle"  // Similarly, choose between "checkmark.circle", "checkmark.seal", or "flag.checkered"
-                case .planned:
-                    return "calendar.badge.clock"
-                case .dropped:
-                    return "xmark.circle"
-                case .none:
-                    return "minus.circle"
-                }
-            }
-            
-            var symbolColor: UIColor {
-                switch indicator {
-                case .inprogress:
-                    return .yellow
-                case .completed:
-                    return .green
-                case .planned:
-                    return .yellow
-                case .dropped:
-                    return .red
-                case .none:
-                    return .white
-                }
-            }
-            
-            indicatorLabel.isHidden = true
-            indicatorImageView.isHidden = false
-            indicatorImageView.image = UIImage(systemName: symbolName)
-            indicatorImageView.tintColor = symbolColor
-        } else {
-            indicatorLabel.text = data.indicator
-            indicatorLabel.isHidden = false
-            indicatorImageView.isHidden = true
-        }
+        indicatorLabel.text = data.indicator
+        indicatorLabel.isHidden = false
+        indicatorImageView.isHidden = true
         indicator.alpha = data.indicator.isEmpty ? 0.0 : 1.0
     }
 }
@@ -220,11 +183,9 @@ extension ListCellHome: UIGestureRecognizerDelegate {
                     return
                 }
                 
-                /*
                 let tempVC = InfoViewRefactor(url: data.url)
                 navController.navigationBar.isHidden = true
                 navController.pushViewController(tempVC, animated: true)
-                 */
             }
         }
     }

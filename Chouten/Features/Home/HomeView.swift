@@ -48,7 +48,9 @@ class HomeView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = ThemeManager.shared.getColor(for: .bg)
-
+        
+        navigationController?.navigationBar.isHidden = true
+        
         configure()
         createDataSource()
 
@@ -68,7 +70,7 @@ class HomeView: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.clipsToBounds = false
         collectionView.backgroundColor = ThemeManager.shared.getColor(for: .bg)
-        collectionView.contentInset = UIEdgeInsets(top: 40, left: 0, bottom: 0, right: 0)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.allowsMultipleSelection = true // Enable multi-selection
@@ -84,8 +86,8 @@ class HomeView: UIViewController {
         view.addSubview(deleteButton)
 
         collectionView.register(ContinueWatchingCard.self, forCellWithReuseIdentifier: ContinueWatchingCard.reuseIdentifier)
-        collectionView.register(CarouselCell.self, forCellWithReuseIdentifier: CarouselCellHome.reuseIdentifier)
-        collectionView.register(ListCell.self, forCellWithReuseIdentifier: ListCellHome.reuseIdentifier)
+        collectionView.register(CarouselCellHome.self, forCellWithReuseIdentifier: CarouselCellHome.reuseIdentifier)
+        collectionView.register(ListCellHome.self, forCellWithReuseIdentifier: ListCellHome.reuseIdentifier)
         collectionView.register(
             SectionHeaderHome.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
@@ -101,7 +103,6 @@ class HomeView: UIViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
             withReuseIdentifier: AddCollectionFooter.reuseIdentifier
         )
-
         
         collectionView.delegate = self
     }
@@ -132,7 +133,7 @@ class HomeView: UIViewController {
         NSLayoutConstraint.activate([
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),// topPadding + 60),
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: topPadding + 70),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -140),
             
             selectButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
@@ -164,8 +165,9 @@ class HomeView: UIViewController {
         
         dataSource?.supplementaryViewProvider = { [weak self] collectionView, kind, indexPath in
             guard let self = self else { return UICollectionReusableView() }
-
-            if kind == UICollectionView.elementKindSectionHeader {
+            
+            switch kind {
+            case UICollectionView.elementKindSectionHeader:
                 let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SectionHeaderHome.reuseIdentifier, for: indexPath) as! SectionHeaderHome
 
                 guard let section = self.dataSource?.snapshot().sectionIdentifiers[indexPath.section] else {
@@ -180,7 +182,7 @@ class HomeView: UIViewController {
                 }
                 
                 return headerView
-            } else if kind == UICollectionView.elementKindSectionFooter {
+            case UICollectionView.elementKindSectionFooter:
                 let section = self.dataSource?.snapshot().sectionIdentifiers[indexPath.section]
                 let hasItems = section?.list.isEmpty == false
                 
@@ -190,11 +192,14 @@ class HomeView: UIViewController {
                     return footerView
                 } else {
                     let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: AddCollectionFooter.reuseIdentifier, for: indexPath) as! AddCollectionFooter
+                    
+                    footerView.delegate = self
+                    
                     return footerView
                 }
+            default:
+                return nil
             }
-
-            return nil
         }
     }
 
@@ -214,13 +219,24 @@ class HomeView: UIViewController {
     func createCompositionalLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
             let section = self.store.collections[sectionIndex]
+
+            let footerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(50)) // Adjust height as needed
+            let footer = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: footerSize, elementKind: UICollectionView.elementKindSectionFooter, alignment: .bottom)
+
             switch section.type {
             case 3:
-                return self.createContinueWatchingCarousel(using: section)
+                let sectionLayout = self.createContinueWatchingCarousel(using: section)
+                if self.store.collections.isEmpty {
+                    sectionLayout.boundarySupplementaryItems = [footer] // Add the footer to this section
+                }
+                return sectionLayout
             case 0:
-                return self.createCarouselSection(using: section)
+                let sectionLayout = self.createCarouselSection(using: section)
+                return sectionLayout
             default:
-                return self.createListSection(using: section)
+                let sectionLayout = self.createListSection(using: section)
+                // sectionLayout.boundarySupplementaryItems = [footer] // Add the footer to this section
+                return sectionLayout
             }
         }
 
@@ -474,5 +490,11 @@ extension HomeView: UICollectionViewDelegate {
             selectedItems.remove(indexPath)
             updateUIForSelection()
         }
+    }
+}
+
+extension HomeView: AddCollectionFooterDelegate {
+    func createCollection() {
+        store.send(.view(.createCollection("Collection")))
     }
 }

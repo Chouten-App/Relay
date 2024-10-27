@@ -59,17 +59,8 @@ class RepoDetailCard: UIView {
         layer.borderWidth = 0.5
         layer.cornerRadius = 12
         translatesAutoresizingMaskIntoConstraints = false
-
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
-
-        if let imageUrl = documentsDirectory?.appendingPathComponent("Repos").appendingPathComponent(repo.id).appendingPathComponent("icon.png") {
-            let imageData = try? Data(contentsOf: imageUrl)
-
-            if let imageData {
-                let image = UIImage(data: imageData)
-                repoPicture.image = image
-            }
-        }
+        
+        repoPicture.setRepoImage(id: repo.id)
 
         title.text = repo.title
         subtitle.text = "\(repo.author) • \(repo.url ?? "")"

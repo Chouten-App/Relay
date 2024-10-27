@@ -59,10 +59,11 @@ extension DatabaseClient: DependencyKey {
                         var section = HomeSection(id: collection.uuid ?? "", title: collection.name ?? "", type: 1, list: [])
                         
                         // Fetch associated items
-                        if let items = collection.items as? Set<Item> {
+                        if let items = collection.items as? Set<UserItem> {
                             var data: [HomeData] = []
                             
                             for item in items {
+                                print(item)
                                 // Assume `infoData` is stored as Data or JSON
                                 do {
                                     let itemData = item.infoData // Assuming this is of type Data
@@ -111,7 +112,7 @@ extension DatabaseClient: DependencyKey {
                     // Check if the collection exists
                     if let collection = collections.first {
                         // Check for the existence of the item in the collection
-                        if let items = collection.items as? Set<Item> {
+                        if let items = collection.items as? Set<UserItem> {
                             for item in items {
                                 // Compare the moduleId and infoData.url
                                 if item.moduleId == moduleId,
@@ -160,13 +161,18 @@ extension DatabaseClient: DependencyKey {
                     // Check if the collection exists
                     if let collection = collections.first {
                         // Create a new Item instance
-                        let item = Item(context: context)
+                        let item = UserItem(context: context)
+                        item.collection = collection
                         item.moduleId = moduleId
                         item.infoData = try? JSONEncoder().encode(infoData)
-                        item.flag = 0 // infoData.flag.rawValue // Assuming flag is a string
+                        item.flag = infoData.flag.rawValue // Assuming flag is a string
                         
                         // Add the item to the collection's items set
-                        // collection.addToItems(item)
+                        if let mutableItems = collection.items as? NSMutableSet {
+                            mutableItems.add(item)
+                        } else {
+                            print("Could not cast items to NSMutableSet.")
+                        }
 
                         // Save the context to persist the new item
                         try context.save()
@@ -203,24 +209,29 @@ extension DatabaseClient: DependencyKey {
                 }
             },
             updateItemInCollection: { collectionId, moduleId, infoData in
-                let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+                let fetchRequest: NSFetchRequest<UserItem> = UserItem.fetchRequest()
                 fetchRequest.predicate = NSPredicate(format: "collection.uuid == %@", collectionId)
-                if var predicate = fetchRequest.predicate {
-                    fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                        predicate,
-                        NSPredicate(format: "infoData.url == %@", infoData.url) // Assuming infoData has a `url` property
-                    ])
-                }
 
                 do {
                     // Fetch the items
                     let items = try context.fetch(fetchRequest)
                     
+                    let filteredItems = items.filter { userItem in
+                        if let itemInfoData = userItem.infoData {
+                            // Attempt to decode the infoData to the expected type
+                            if let json = try? JSONSerialization.jsonObject(with: itemInfoData, options: []) as? [String: Any],
+                               let urlString = json["url"] as? String {
+                                return urlString == infoData.url
+                            }
+                        }
+                        return false
+                    }
+                    
                     // Check if the item exists
-                    if let item = items.first {
+                    if let item = filteredItems.first {
                         // Update the properties
                         item.infoData = try? JSONEncoder().encode(infoData)
-                        item.flag = 0 // infoData.flag.rawValue // Assuming flag is a string
+                        item.flag = infoData.flag.rawValue
                         
                         // Save the context to persist the changes
                         try context.save()
@@ -234,7 +245,7 @@ extension DatabaseClient: DependencyKey {
                 }
             },
             removeFromCollection: { collectionId, moduleId, infoData in
-                let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+                let fetchRequest: NSFetchRequest<UserItem> = UserItem.fetchRequest()
                 fetchRequest.predicate = NSPredicate(format: "collection.uuid == %@", collectionId)
                 if var predicate = fetchRequest.predicate {
                     fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [

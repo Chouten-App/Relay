@@ -95,11 +95,17 @@ class RepoView: UIViewController, UITextFieldDelegate {
         scrollView.addSubview(stack)
 
         view.addSubview(scrollView)
+        
+        let scenes = UIApplication.shared.connectedScenes
+        let windowScene = scenes.first as? UIWindowScene
+        let window = windowScene?.windows.first
+
+        let topPadding = window?.safeAreaInsets.top ?? 0.0
 
         NSLayoutConstraint.activate([
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 72),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: topPadding + 70),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80),
 
             stack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20),

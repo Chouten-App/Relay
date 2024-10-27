@@ -197,12 +197,10 @@ extension CarouselCellHome: UIGestureRecognizerDelegate {
             return
         }
 
-        /*
         let tempVC = InfoViewRefactor(url: data.url)
 
         navController.navigationBar.isHidden = true
         navController.pushViewController(tempVC, animated: true)
-         */
     }
 
     @objc private func handleLongPress(_ gesture: UILongPressGestureRecognizer) {

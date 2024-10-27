@@ -106,6 +106,9 @@ class RepoSelectorHeader: UIView {
         authorLabel.text = repo.author
         titleLabel.text = repo.title
         descriptionLabel.text = repo.description
+        
+        // add repo image
+        repoPicture.setRepoImage(id: repo.id)
 
         addSubview(wrapper)
 
