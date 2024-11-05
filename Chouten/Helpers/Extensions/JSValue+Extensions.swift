@@ -166,13 +166,13 @@ extension JSValue {
         }
     }
 
-     func toSubtitlesArray() -> [Subtitle] {
+     func toSubtitlesArray() -> [SubtitleData] {
         guard isArray else {
             return []
         }
 
         if let jsArray = self.toArray() as? [[String: Any]] {
-            var subtitlesArray = [Subtitle]()
+            var subtitlesArray = [SubtitleData]()
 
             for dict in jsArray {
                 guard let url = dict["url"] as? String,
@@ -181,7 +181,7 @@ extension JSValue {
                 }
 
                 // Here, you can create a MediaList instance
-                let subtitle = Subtitle(url: url, language: language)
+                let subtitle = SubtitleData(url: url, language: language)
                 subtitlesArray.append(subtitle)
             }
 

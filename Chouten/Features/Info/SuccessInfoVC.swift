@@ -86,7 +86,6 @@ class SuccessInfoVC: UIViewController {
         extraInfoDisplay.updateData()
 
         if !infoData.mediaList.isEmpty {
-            print("NOT EMPTY")
             self.loadingSeasonDisplay.alpha = 1.0
             self.loadingMediaListDisplay.alpha = 1.0
             UIView.animate(withDuration: 0.2, animations: {
@@ -104,7 +103,7 @@ class SuccessInfoVC: UIViewController {
 
                 self.seasonDisplay.alpha = 0.0
                 self.mediaListDisplay.alpha = 0.0
-
+                
                 self.contentView.addArrangedSubview(self.seasonDisplay)
                 self.contentView.addArrangedSubview(self.mediaListDisplay)
 
@@ -329,13 +328,10 @@ extension SuccessInfoVC: MediaListDelegate {
 
         switch currentModuleType {
         case .video:
-            break
-            /*
             let landscapeVC = PlayerVC(data: data, info: infoData, index: index)
             landscapeVC.modalPresentationStyle = .fullScreen
             navController.navigationBar.isHidden = true
             navController.present(landscapeVC, animated: true, completion: nil)
-             */
         case .book:
             break
             /*

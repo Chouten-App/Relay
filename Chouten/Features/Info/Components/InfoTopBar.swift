@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import GoogleCast
 
 extension UIView {
     func snapshotWithGaussianBlur(radius: CGFloat) -> UIImage? {
@@ -54,6 +55,8 @@ class InfoTopBar: UIView {
 
     let backButton = CircleButton(icon: "chevron.left")
     var bookmarkButton = CircleButton(icon: "bookmark")
+    
+    let castButton = GCKUICastButton()
 
     let titleLabel: UILabel = {
         let label           = UILabel()
@@ -124,6 +127,9 @@ class InfoTopBar: UIView {
 
         titleLabel.alpha = 0.0
         blurView.alpha = 0.0
+        
+        castButton.translatesAutoresizingMaskIntoConstraints = false
+        titleHorizontalStack.addArrangedSubview(castButton)
 
         backButton.onTap = {
             let scenes = UIApplication.shared.connectedScenes

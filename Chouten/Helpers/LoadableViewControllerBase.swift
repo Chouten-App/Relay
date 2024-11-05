@@ -36,7 +36,7 @@ open class LoadableViewControllerBase: UIViewController {
         }
     }
 
-    public required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 

@@ -8,7 +8,7 @@
 import Foundation
 import JavaScriptCore
 
-struct Subtitle: Codable, Equatable, Sendable {
+struct SubtitleData: Codable, Equatable, Sendable {
     let url: String
     let language: String
 

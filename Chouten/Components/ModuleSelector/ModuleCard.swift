@@ -164,7 +164,7 @@ class ModuleCard: UIView {
 //        heightConstraint.priority = .defaultHigh
 
         NSLayoutConstraint.activate([
-            widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
+            // widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
 
             modulePicture.leadingAnchor.constraint(equalTo: leadingAnchor, constant: selector ? 12 : 16),
             modulePicture.centerYAnchor.constraint(equalTo: centerYAnchor),

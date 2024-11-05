@@ -24,5 +24,17 @@
 		<string>audio</string>
 		<string>fetch</string>
 	</array>
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>This app requires Bluetooth access to discover Cast devices.</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>This app requires access to the local network to discover Cast devices.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>This app requires microphone access to enable audio features for Chromecast.</string>
+    <key>NSBonjourServices</key>
+    <array>
+        <string>_preflight_check._tcp</string>
+        <string>_CC1AD845._googlecast._tcp</string>
+        <string>_googlecast._tcp</string>
+    </array>
 </dict>
 </plist>

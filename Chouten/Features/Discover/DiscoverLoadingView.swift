@@ -79,12 +79,11 @@ import UIKit
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 40),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            // contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
 
             scrollViewCarousel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.85),
             scrollViewCarousel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            scrollViewCarousel.topAnchor.constraint(equalTo: contentView.topAnchor),
-            scrollViewCarousel.heightAnchor.constraint(equalToConstant: 460), // Adjusted height for visibility
+            scrollViewCarousel.heightAnchor.constraint(equalToConstant: 460),
 
             carousel.leadingAnchor.constraint(equalTo: scrollViewCarousel.contentLayoutGuide.leadingAnchor),
             carousel.trailingAnchor.constraint(equalTo: scrollViewCarousel.contentLayoutGuide.trailingAnchor),

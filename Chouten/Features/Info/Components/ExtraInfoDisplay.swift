@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import GoogleCast
 
 class ExtraInfoDisplay: UIView {
 
@@ -14,6 +15,7 @@ class ExtraInfoDisplay: UIView {
     let stack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
+        stack.alignment = .center
         stack.spacing = 8
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
@@ -27,7 +29,18 @@ class ExtraInfoDisplay: UIView {
         label.font          = UIFont.systemFont(ofSize: 14)
         label.alpha         = 0.7
         label.numberOfLines = 9
+        label.lineBreakMode = .byCharWrapping
         return label
+    }()
+    
+    let chapterButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = .accent
+        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .bold)
+        button.setTitle("Continue Watching: Episode 1", for: .normal)
+        button.layer.cornerRadius = 20
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
 
 
@@ -73,6 +86,10 @@ class ExtraInfoDisplay: UIView {
         tagsDisplay.updateData()
 
         stack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        stack.addArrangedSubview(chapterButton)
+        
+        stack.setCustomSpacing(16, after: chapterButton)
 
         if !infoData.tags.isEmpty {
             stack.addArrangedSubview(tagsDisplay)
@@ -84,6 +101,37 @@ class ExtraInfoDisplay: UIView {
         paragraphStyle.hyphenationFactor = 1.0
         attstr.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(0..<attstr.length))
         descriptionLabel.attributedText = attstr
+        
+        chapterButton.addTarget(self, action: #selector(castMedia), for: .touchUpInside)
+    }
+    
+    @objc func castMedia() {
+        let mediaMetadata = GCKMediaMetadata()
+        
+        // Set the title
+        mediaMetadata.setString("Tower of God Season 2", forKey: kGCKMetadataKeyTitle)
+
+        // Set the poster image
+        let posterURL = URL(string: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx153406-dU2RLKgMUF2U.jpg")!
+        let image = GCKImage(url: posterURL, width: 220, height: 360) // Use appropriate dimensions
+        mediaMetadata.addImage(image)
+        
+        let mediaInfo = GCKMediaInformation(
+            contentID: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            streamType: .buffered,
+            contentType: "video/mp4",
+            metadata: mediaMetadata,
+            streamDuration: 0,
+            mediaTracks: nil,
+            textTrackStyle: nil,
+            customData: nil
+        )
+
+        if let session = GCKCastContext.sharedInstance().sessionManager.currentSession {
+            session.remoteMediaClient?.loadMedia(mediaInfo)
+        } else {
+            // Handle case where no session is active
+        }
     }
 
     // MARK: Layout
@@ -93,7 +141,12 @@ class ExtraInfoDisplay: UIView {
             stack.topAnchor.constraint(equalTo: topAnchor),
             stack.bottomAnchor.constraint(equalTo: bottomAnchor),
             stack.leadingAnchor.constraint(equalTo: leadingAnchor),
-            stack.trailingAnchor.constraint(equalTo: trailingAnchor)
+            stack.trailingAnchor.constraint(equalTo: trailingAnchor),
+            
+            chapterButton.heightAnchor.constraint(equalToConstant: 40),
+            chapterButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 0.7),
+            
+            descriptionLabel.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40)
         ])
 
         if !infoData.tags.isEmpty {

@@ -8,7 +8,7 @@
 import Foundation
 
 extension Double {
-    public func removeTrailingZeros() -> String {
+    func removeTrailingZeros() -> String {
         String(format: "%g", self)
     }
 }

@@ -13,6 +13,8 @@
 		31B985CC2CC3E95E00965288 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 31B985CB2CC3E95E00965288 /* NukeUI */; };
 		31B987D72CC55CBD00965288 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 31B987D62CC55CB800965288 /* README.md */; };
 		31B98B042CC5890100965288 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 31B98B032CC5890100965288 /* ZIPFoundation */; };
+		AE7914762CD82BA1003BBFFE /* GoogleCast.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE7914742CD82B9E003BBFFE /* GoogleCast.xcframework */; };
+		AE7914772CD82BA1003BBFFE /* GoogleCast.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AE7914742CD82B9E003BBFFE /* GoogleCast.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -22,6 +24,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				AE7914772CD82BA1003BBFFE /* GoogleCast.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -31,6 +34,7 @@
 /* Begin PBXFileReference section */
 		31B9855B2CBC54A300965288 /* Chouten.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chouten.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		31B987D62CC55CB800965288 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		AE7914742CD82B9E003BBFFE /* GoogleCast.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = GoogleCast.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -60,6 +64,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				31B985C12CC3A21400965288 /* ComposableArchitecture in Frameworks */,
+				AE7914762CD82BA1003BBFFE /* GoogleCast.xcframework in Frameworks */,
 				31B985C82CC3E95E00965288 /* Nuke in Frameworks */,
 				31B985CA2CC3E95E00965288 /* NukeExtensions in Frameworks */,
 				31B985CC2CC3E95E00965288 /* NukeUI in Frameworks */,
@@ -91,6 +96,7 @@
 		31B986122CC5368500965288 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AE7914742CD82B9E003BBFFE /* GoogleCast.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

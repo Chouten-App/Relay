@@ -10,11 +10,11 @@ import JavaScriptCore
 
 struct MediaStream: Codable, Equatable, Sendable {
     let streams: [Stream]
-    let subtitles: [Subtitle]
+    let subtitles: [SubtitleData]
     let skips: [SkipTime]
     let headers: [String: String]?
 
-    init(streams: [Stream], subtitles: [Subtitle], skips: [SkipTime], headers: [String: String]?) {
+    init(streams: [Stream], subtitles: [SubtitleData], skips: [SkipTime], headers: [String: String]?) {
         self.streams = streams
         self.subtitles = subtitles
         self.skips = skips

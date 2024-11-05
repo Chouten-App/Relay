@@ -138,13 +138,9 @@ class HomeView: UIViewController {
             
             selectButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             selectButton.bottomAnchor.constraint(equalTo: view.topAnchor, constant: topPadding + 100),
-            selectButton.widthAnchor.constraint(equalToConstant: 100),
-            selectButton.heightAnchor.constraint(equalToConstant: 50),
             
             deleteButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            deleteButton.topAnchor.constraint(equalTo: view.topAnchor, constant: topPadding + 60),
-            deleteButton.widthAnchor.constraint(equalToConstant: 80),
-            deleteButton.heightAnchor.constraint(equalToConstant: 80)
+            deleteButton.topAnchor.constraint(equalTo: view.topAnchor, constant: topPadding + 60)
         ])
         
         deleteButton.alpha = 0

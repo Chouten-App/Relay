@@ -5,8 +5,8 @@
 //  Created by Inumaki on 20/10/2024.
 //
 
-
 import Foundation
+import OSLog
 
 enum LogType {
     case info
@@ -24,6 +24,8 @@ struct Log {
 
 class LogManager {
     static let shared = LogManager()
+    
+    private let logger = Logger(subsystem: "com.inumaki.Chouten", category: "LogManager")
 
     private var logs: [Log] = []
 

@@ -15,7 +15,7 @@ class MediaItemDisplay: UIView {
     var watched: Bool
 
     // swiftlint:disable lower_acl_than_parent
-    public weak var delegate: MediaItemDelegate?
+    weak var delegate: MediaItemDelegate?
     // swiftlint:enable lower_acl_than_parent
 
     override init(frame: CGRect) {

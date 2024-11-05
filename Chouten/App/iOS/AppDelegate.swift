@@ -6,6 +6,9 @@
 //
 
 import UIKit
+import GoogleCast
+import AVFoundation
+import Network
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -76,8 +79,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // create modules and theme folder if they dont exist
         createModuleAndThemesFoldersIfNeeded()
         
-        // copyFileToDocumentsFolder(nameForFile: "default", extForFile: "theme")
+        let options = GCKCastOptions(discoveryCriteria: GCKDiscoveryCriteria(applicationID: kGCKDefaultMediaReceiverApplicationID))
+        GCKCastContext.setSharedInstanceWith(options)
+        
+        requestPermissions()
+        
         return true
+    }
+    
+    private func requestPermissions() {
+        // Check Bluetooth permission
+        let bluetoothStatus = AVCaptureDevice.authorizationStatus(for: .audio)
+        if bluetoothStatus == .notDetermined {
+            AVCaptureDevice.requestAccess(for: .audio) { granted in
+                if granted {
+                    print("Bluetooth access granted.")
+                } else {
+                    print("Bluetooth access denied.")
+                }
+            }
+        }
+
+        // Check Local Network permission (iOS 14 and later)
+        let localNetworkStatus = NWPathMonitor().currentPath.status
+        if localNetworkStatus == .requiresConnection || localNetworkStatus == .satisfied {
+            print("Local network access is already granted.")
+        } else {
+            // Here you can inform the user that they need to enable Local Network access in settings
+            print("Local network access is not granted.")
+        }
     }
     
     func application(_: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options _: UIScene.ConnectionOptions) -> UISceneConfiguration {

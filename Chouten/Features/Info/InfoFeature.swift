@@ -91,7 +91,7 @@ struct InfoFeature: Reducer {
                                 let collections = await self.databaseClient.fetchCollections();
                                 
                                 // TEMPORARY
-                                await self.databaseClient.addToContinueWatching("", CollectionItem(infoData: data, url: url, flag: .none))
+                                // await self.databaseClient.addToContinueWatching("", CollectionItem(infoData: data, url: url, flag: .none))
                                 
                                 await send(.view(.updateIsInCollections))
                                 
@@ -106,6 +106,9 @@ struct InfoFeature: Reducer {
                     return .merge(
                         .run { send in
                             do {
+                                // TODO: Fix race condition without sleep timer
+                                try await Task.sleep(nanoseconds: UInt64(0.5 * Double(NSEC_PER_SEC)))
+                                
                                 let data = try await self.relayClient.media(url)
                                 await send(.view(.setMediaList(data)))
                             } catch {

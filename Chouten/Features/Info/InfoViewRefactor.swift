@@ -8,6 +8,7 @@
 import Combine
 import ComposableArchitecture
 import UIKit
+import GoogleCast
 
 class InfoViewRefactor: LoadableViewControllerBase {
     var store: Store<InfoFeature.State, InfoFeature.Action>
@@ -17,6 +18,8 @@ class InfoViewRefactor: LoadableViewControllerBase {
     let successInfoVC = SuccessInfoVC(infoData: .freeToUseData)
 
     let topBar = InfoTopBar(title: InfoData.freeToUseData.titles.primary)
+    
+    private var castManager: CastManager?
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         .portrait
@@ -34,6 +37,8 @@ class InfoViewRefactor: LoadableViewControllerBase {
         
         super.init(loadingViewController: loadingInfoVC, errorViewController: errorInfoVC, successViewController: successInfoVC)
 
+        castManager = CastManager()
+        
         store.send(.view(.onAppear(url)))
     }
 
@@ -66,6 +71,21 @@ class InfoViewRefactor: LoadableViewControllerBase {
                 self.showSuccess()
             }
         }
+        
+        Task {
+            do {
+                if try await requestLocalNetworkAuthorization() {
+                    // Permission is granted, continue to next onboarding step
+                } else {
+                    // Permission denied, explain why we need it and show button to open Settings
+                }
+            } catch {
+                // Networking failure, handle error
+            }
+        }
+        
+        GCKCastContext.sharedInstance().sessionManager.add(self)
+        GCKCastContext.sharedInstance().discoveryManager.add(self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -97,6 +117,10 @@ class InfoViewRefactor: LoadableViewControllerBase {
             topBar.heightAnchor.constraint(equalToConstant: topPadding + 40),
             topBar.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width)
         ])
+    }
+    
+    deinit {
+        castManager?.stopDiscovery()
     }
 }
 
@@ -131,5 +155,32 @@ extension InfoViewRefactor: SuccessInfoVCDelegate {
     
     func updateItemInCollection(collection: HomeSection) {
         store.send(.view(.updateItemInCollection(collection)))
+    }
+}
+
+extension InfoViewRefactor: GCKSessionManagerListener {
+    func sessionManager(_ sessionManager: GCKSessionManager, didStart session: GCKSession) {
+        print("Session started")
+    }
+
+    func sessionManager(_ sessionManager: GCKSessionManager, didEnd session: GCKSession) {
+        print("Session ended")
+    }
+}
+
+extension InfoViewRefactor: GCKDiscoveryManagerListener {
+    func didStartDiscovery(forDeviceCategory deviceCategory: String) {
+        print("Started Discovery")
+    }
+    
+    func didUpdateDeviceList() {
+        
+        print("Updated")
+        
+        let deviceCount = GCKCastContext.sharedInstance().discoveryManager.deviceCount
+        
+        for deviceIndex in 0..<deviceCount {
+            print("Device: \(GCKCastContext.sharedInstance().discoveryManager.device(at: deviceIndex))")
+        }
     }
 }
