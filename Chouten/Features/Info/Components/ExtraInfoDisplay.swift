@@ -5,6 +5,7 @@
 //  Created by Inumaki on 08.02.24.
 //
 
+import Core
 import UIKit
 import GoogleCast
 
@@ -35,12 +36,35 @@ class ExtraInfoDisplay: UIView {
     
     let chapterButton: UIButton = {
         let button = UIButton()
+        var config = UIButton.Configuration.plain()
+        config.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
+        config.attributedTitle = AttributedString(
+            NSAttributedString(
+                string: "Start Watching: Episode 1",
+                attributes: [
+                    .font: UIFont.systemFont(ofSize: 14, weight: .bold),
+                    .foregroundColor: UIColor.fg
+                ]
+            )
+        )
+        config.cornerStyle = .capsule
+        button.configuration = config
         button.backgroundColor = .accent
-        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .bold)
-        button.setTitle("Continue Watching: Episode 1", for: .normal)
-        button.layer.cornerRadius = 20
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
+    }()
+    
+    let countdownTitle = TitleLabel("Episode 12", style: .subtitle)
+    let countdownTime = TitleLabel("4 days, 12 hours", style: .caption)
+    
+    let continueStack: UIStackView = {
+        let continueStack = UIStackView()
+        continueStack.axis = .horizontal
+        continueStack.spacing = 8
+        continueStack.alignment = .center
+        continueStack.distribution = .fillProportionally
+        continueStack.translatesAutoresizingMaskIntoConstraints = false
+        return continueStack
     }()
 
 
@@ -87,7 +111,9 @@ class ExtraInfoDisplay: UIView {
 
         stack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        stack.addArrangedSubview(chapterButton)
+        stack.addArrangedSubview(continueStack)
+        continueStack.addArrangedSubview(chapterButton)
+        continueStack.addArrangedSubview(countdownTitle)
         
         stack.setCustomSpacing(16, after: chapterButton)
 
@@ -143,8 +169,9 @@ class ExtraInfoDisplay: UIView {
             stack.leadingAnchor.constraint(equalTo: leadingAnchor),
             stack.trailingAnchor.constraint(equalTo: trailingAnchor),
             
-            chapterButton.heightAnchor.constraint(equalToConstant: 40),
-            chapterButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 0.7),
+            // chapterButton.heightAnchor.constraint(equalToConstant: 40),
+            chapterButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 0.65),
+            continueStack.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
             
             descriptionLabel.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40)
         ])

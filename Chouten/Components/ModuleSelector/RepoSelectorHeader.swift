@@ -5,6 +5,7 @@
 //  Created by Inumaki on 06.03.24.
 //
 
+import Core
 import UIKit
 
 class RepoSelectorHeader: UIView {

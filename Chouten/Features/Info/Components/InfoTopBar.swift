@@ -8,24 +8,38 @@
 import UIKit
 import GoogleCast
 
-extension UIView {
-    func snapshotWithGaussianBlur(radius: CGFloat) -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(bounds.size, false, UIScreen.main.scale)
-        guard let context = UIGraphicsGetCurrentContext() else { return nil }
-        layer.render(in: context)
-        guard let snapshot = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
-        UIGraphicsEndImageContext()
+class VariableBlurUIView: UIVisualEffectView {
 
-        let ciImage = CIImage(image: snapshot)
-        let filter = CIFilter(name: "CIGaussianBlur")
-        filter?.setValue(ciImage, forKey: kCIInputImageKey)
-        filter?.setValue(radius, forKey: kCIInputRadiusKey)
+    init(gradientMask: UIImage, maxBlurRadius: CGFloat = 50) {
+        super.init(effect: UIBlurEffect(style: .regular))
 
-        guard let outputCIImage = filter?.outputImage else { return nil }
-        let context_new = CIContext(options: nil)
-        guard let outputCGImage = context_new.createCGImage(outputCIImage, from: outputCIImage.extent) else { return nil }
+        // `CAFilter` is a private QuartzCore class that we dynamically declare in `CAFilter.h`.
+        let variableBlur = CAFilter.filter(withType: "variableBlur") as! NSObject
 
-        return UIImage(cgImage: outputCGImage)
+        // The blur radius at each pixel depends on the alpha value of the corresponding pixel in the gradient mask.
+        // An alpha of 1 results in the max blur radius, while an alpha of 0 is completely unblurred.
+        guard let gradientImageRef = gradientMask.cgImage else {
+            fatalError("Could not decode gradient image")
+        }
+
+        variableBlur.setValue(maxBlurRadius, forKey: "inputRadius")
+        variableBlur.setValue(gradientImageRef, forKey: "inputMaskImage")
+        variableBlur.setValue(true, forKey: "inputNormalizeEdges")
+
+        // Get rid of the visual effect view's dimming/tint view, so we don't see a hard line.
+        let tintOverlayView = subviews[1]
+        tintOverlayView.alpha = 0
+
+        // We use a `UIVisualEffectView` here purely to get access to its `CABackdropLayer`,
+        // which is able to apply various, real-time CAFilters onto the views underneath.
+        let backdropLayer = subviews.first?.layer
+
+        // Replace the standard filters (i.e. `gaussianBlur`, `colorSaturate`, etc.) with only the variableBlur.
+        backdropLayer?.filters = [variableBlur]
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -39,19 +53,7 @@ class InfoTopBar: UIView {
         return view
     }()
 
-    let blurView: UIVisualEffectView = {
-        let effect              = UIBlurEffect(style: .systemUltraThinMaterialDark)
-        let view                = UIVisualEffectView(effect: effect)
-        view.layer.borderColor  = ThemeManager.shared.getColor(for: .border).cgColor
-        view.layer.borderWidth  = 0.5
-        view.translatesAutoresizingMaskIntoConstraints = false
-        let animator = UIViewPropertyAnimator()
-        animator.addAnimations { view.effect = effect }
-        animator.fractionComplete = 0
-        animator.stopAnimation(false)
-        animator.finishAnimation(at: .current)
-        return view
-    }()
+    let blurView = VariableBlurUIView(gradientMask: UIImage(named: "alpha-gradient")!)
 
     let backButton = CircleButton(icon: "chevron.left")
     var bookmarkButton = CircleButton(icon: "bookmark")
@@ -98,6 +100,7 @@ class InfoTopBar: UIView {
         super.init(frame: frame)
         configure()
         setupConstraints()
+        // removeFilters()
     }
 
     required init?(coder: NSCoder) {
@@ -127,6 +130,7 @@ class InfoTopBar: UIView {
 
         titleLabel.alpha = 0.0
         blurView.alpha = 0.0
+        blurView.translatesAutoresizingMaskIntoConstraints = false
         
         castButton.translatesAutoresizingMaskIntoConstraints = false
         titleHorizontalStack.addArrangedSubview(castButton)
@@ -149,13 +153,13 @@ class InfoTopBar: UIView {
             wrapper.topAnchor.constraint(equalTo: topAnchor),
             wrapper.bottomAnchor.constraint(equalTo: bottomAnchor),
 
-            blurView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: -1),
-            blurView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 1),
-            blurView.topAnchor.constraint(equalTo: topAnchor, constant: -1),
+            blurView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            blurView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            blurView.topAnchor.constraint(equalTo: topAnchor),
             blurView.bottomAnchor.constraint(equalTo: bottomAnchor),
 
             horizontalStack.leadingAnchor.constraint(equalTo: wrapper.leadingAnchor, constant: 20),
-            horizontalStack.bottomAnchor.constraint(equalTo: wrapper.bottomAnchor, constant: -12),
+            horizontalStack.bottomAnchor.constraint(equalTo: wrapper.bottomAnchor, constant: -12 - 60),
 
             marqueeWrapper.topAnchor.constraint(equalTo: backButton.topAnchor),
             marqueeWrapper.bottomAnchor.constraint(equalTo: backButton.bottomAnchor),
@@ -166,5 +170,34 @@ class InfoTopBar: UIView {
             titleHorizontalStack.leadingAnchor.constraint(equalTo: marqueeWrapper.leadingAnchor),
             titleHorizontalStack.trailingAnchor.constraint(equalTo: marqueeWrapper.trailingAnchor)
         ])
+    }
+    
+    private func removeFilters() {
+        let effectLayer = blurView.layer
+                
+        // Get all the filters applied to the layer
+        var filters = effectLayer.filters
+        
+        // Filter the filters to keep only GaussianBlur (or any other type you want)
+        filters = filters?.filter { filter in
+            if let gaussianBlur = filter as? CIFilter {
+                return gaussianBlur.name == "CIGaussianBlur"
+            }
+            return false
+        }
+        
+        // Apply the filtered list of filters back to the layer
+        effectLayer.filters = filters
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = blurView.bounds
+        gradientLayer.colors = [
+            UIColor.black.withAlphaComponent(1.0).cgColor,  // Full blur at the top
+            UIColor.black.withAlphaComponent(0.0).cgColor   // No blur at the bottom
+        ]
+        gradientLayer.locations = [0.0, 1.0]
+        
+        // Add the gradient as a mask to the visualEffectView
+        blurView.layer.mask = gradientLayer
     }
 }

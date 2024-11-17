@@ -5,6 +5,7 @@
 //  Created by Inumaki on 9/7/24.
 //
 
+import Core
 import UIKit
 
 class AsyncImageView: UIImageView {

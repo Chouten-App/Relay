@@ -5,6 +5,7 @@
 //  Created by Eltik on 30.7.24.
 //
 
+import Core
 import Dependencies
 import Foundation
 

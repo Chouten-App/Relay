@@ -5,6 +5,7 @@
 //  Created by Inumaki on 19.04.24.
 //
 
+import Core
 import ComposableArchitecture
 import Combine
 import SwiftUI
@@ -103,18 +104,21 @@ struct HomeFeature: Reducer {
                                 flag: .none
                             )
                         )
+                        await send(.view(.onAppear))
                     }
                 case .deleteCollection(let collectionId):
                     return .run { send in
                         print("Deleting collection for \(collectionId).")
-                        await self.databaseClient.removeCollection(collectionId, "");
+                        await self.databaseClient.removeCollection(collectionId, "")
+                        await send(.view(.onAppear))
                     }
                 case .createCollection(let name):
-                    return .run { _ in
+                    return .run { send in
                         print("Creating collection for \(name)...")
                         
                         let result = await self.databaseClient.createCollection(name)
                         print("Collection created with name \(result)!")
+                        await send(.view(.onAppear))
                     }
                 }
             }

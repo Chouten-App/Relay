@@ -5,6 +5,7 @@
 //  Created by Inumaki on 06.02.24.
 //
 
+import Core
 import UIKit
 import ComposableArchitecture
 
@@ -71,7 +72,8 @@ class SuccessInfoVC: UIViewController {
 
     func updateData() {
         if (delegate?.fetchIsInAnyCollection() == true) {
-            topBar.bookmarkButton.iconName = "bookmark.fill"
+            // topBar.bookmarkButton.iconName = "bookmark.fill"
+            headerDisplay.bookmarkButton.setActive()
         }
         
         topBar.titleLabel.text = infoData.titles.primary
@@ -189,7 +191,19 @@ class SuccessInfoVC: UIViewController {
         seasonSelector.layer.zPosition = 20
         seasonSelector.delegate = self
         
-        topBar.bookmarkButton.addTarget(self, action: #selector(bookmarkButtonTapped), for: .touchUpInside)
+        //topBar.bookmarkButton.addTarget(self, action: #selector(bookmarkButtonTapped), for: .touchUpInside)
+        headerDisplay.bookmarkButton.onTap = {
+            let collectionMenuVC = CollectionMenuVC()
+            collectionMenuVC.delegate = self
+
+            if let sheet = collectionMenuVC.sheetPresentationController {
+                sheet.detents = [.medium()]
+                sheet.prefersGrabberVisible = true
+                sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+            }
+
+            self.present(collectionMenuVC, animated: true, completion: nil)
+        }
 
         view.addSubview(seasonSelector)
 
@@ -205,19 +219,6 @@ class SuccessInfoVC: UIViewController {
             }
         }
     }
-    
-    @objc func bookmarkButtonTapped() {
-        let collectionMenuVC = CollectionMenuVC()
-        collectionMenuVC.delegate = self
-
-        if let sheet = collectionMenuVC.sheetPresentationController {
-            sheet.detents = [.medium()]
-            sheet.prefersGrabberVisible = true
-            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
-        }
-
-        present(collectionMenuVC, animated: true, completion: nil)
-    }
 
     // MARK: Layout
     private func setupConstraints() {
@@ -231,7 +232,7 @@ class SuccessInfoVC: UIViewController {
             topBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             topBar.topAnchor.constraint(equalTo: view.topAnchor),
-            topBar.heightAnchor.constraint(equalToConstant: topPadding + 40),
+            topBar.heightAnchor.constraint(equalToConstant: topPadding + 40 + 60),
 
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
